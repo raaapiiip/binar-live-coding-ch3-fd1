@@ -1,0 +1,1 @@
+console.log ("Semangat menjalani hari pertama di minggu ini ya! (Malas banget)")
