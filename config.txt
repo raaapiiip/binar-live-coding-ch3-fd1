@@ -6,10 +6,10 @@
 
 // configurasi npm dan DB koneksi
 4. configurasi package.json, spt script dev : nodemon index.js, dll.
-5. configurasi database.js di folder config untuk database connection dari sequelize nya (sequelizerc buat configure settingan sequelize-cli)
 
 // data model dan migration ke database menggunakan sequelize 
-6. sequelize init 
+5. sequelize init 
+6. configurasi database.js di folder config untuk database connection dari sequelize nya (sequelizerc buat configure settingan sequelize-cli)
 7. sequelize model:generate --name product --attributes name:string,price:float,stock:integer 
 contoh =  
 sequelize model:generate --name transactionDetails --attributes customer_number:string,productId:string,transaction_number:integer,status:string,price:string 

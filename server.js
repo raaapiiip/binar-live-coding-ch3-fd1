@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 // if(req.url === / "rafif") {} Get URL by name
 app.get("/rafif", (req, res) => {
   res.status(200).json({
-    message: "Ping Succesfully!",
+    message: "Ping Successfully!",
   });
 });
 
@@ -27,11 +27,26 @@ const cars = JSON.parse(
   fs.readFileSync(`${__dirname}/data/cars.json`, "utf-8")
 );
 
+//POST cars
+app.post("/api/v1/cars", (req, res) => {
+  const newCar = req.body;
+  cars.push(newCar);
+
+  fs.writeFile(`${__dirname}/data/cars.json`, JSON.stringify(cars), (err) => {
+    res.status(201).json({
+      status: "Success",
+      message: "Success add new car data",
+      isSuccess: true,
+      data: { car: newCar }, //Object destructuring
+    });
+  });
+});
+
 //GET cars
 app.get("/api/v1/cars", (req, res) => {
   res.status(200).json({
-    status: "Succes",
-    message: "Succes get car list data",
+    status: "Success",
+    message: "Success get car list data",
     isSuccess: true,
     totalData: cars.length,
     data: { cars },
@@ -50,10 +65,8 @@ app.get("/api/v1/cars/:id", (req, res) => {
     return res.status(404).json({
       status: "Failed",
       message: `Failed get car data from this id: ${carId}`,
-      isSuccess: true,
-      data: {
-        car,
-      },
+      isSuccess: false,
+      data: null,
     });
   }
 
@@ -62,23 +75,83 @@ app.get("/api/v1/cars/:id", (req, res) => {
     message: "Success get car data by id",
     isSuccess: true,
     data: {
-      car,
+      car, //Object destructuring
     },
   });
 });
 
-//POST cars
-app.post("/api/v1/cars", (req, res) => {
+// PATCH cars
+app.patch("/api/v1/cars/:id", (req, res) => {
+  // UPDATE ... from (table) WHERE id=req.params.id
+  const id = req.params.id;
 
-  const newCar = req.body;
-  cars.push(newCar);
+  // Object destructuring
+  const { name, year, type } = req.body;
 
+  // Find data by id
+  const car = cars.find((i) => i.id === id);
+  console.log(car);
+
+  // Find index data
+  const carIndex = cars.findIndex((car) => car.id === id);
+  console.log(carIndex);
+
+  // Update according to request body (Client/Front-end)
+  // Object assign = menggunakan object spread operator
+  cars[carIndex] = { ...cars[carIndex], ...req.body };
+
+  console.log(cars);
+
+  if (!car) {
+    return res.status(404).json({
+      status: "Failed",
+      message: `Failed get car data from this id: ${carId}`,
+      isSuccess: false,
+      data: null,
+    });
+  }
+
+  // Rewrite for data in .json file
   fs.writeFile(`${__dirname}/data/cars.json`, JSON.stringify(cars), (err) => {
     res.status(201).json({
-      status: "Succes",
-      message: "Succes add new car data",
+      status: "Success",
+      message: "Success to rewrite car data",
       isSuccess: true,
-      data: { car: newCar },
+    });
+  });
+});
+
+// DELETE cars
+app.delete("/api/v1/cars/:id", (req, res) => {
+  // UPDATE ... from (table) WHERE id=req.params.id
+  const id = req.params.id;
+
+  // Find data by id
+  const car = cars.find((i) => i.id === id);
+  console.log(car);
+
+  // Find index data
+  const carIndex = cars.findIndex((car) => car.id === id);
+  console.log(carIndex);
+
+  if (!car) {
+    return res.status(404).json({
+      status: "Failed",
+      message: `Failed to delete car data from this id: ${carId}`,
+      isSuccess: false,
+      data: null,
+    });
+  }
+
+  // Deleting car data according to index = req.params.id
+  cars.splice(carIndex, 1);
+
+  // Rewrite for data in .json file
+  fs.writeFile(`${__dirname}/data/cars.json`, JSON.stringify(cars), (err) => {
+    res.status(201).json({
+      status: "Success",
+      message: "Success to delete car data",
+      isSuccess: true,
     });
   });
 });
@@ -88,7 +161,7 @@ app.post("/api/v1/cars", (req, res) => {
 app.use((req, res, next) => {
   res.status(404).json({
     status: "Failed",
-    message: "API not exist!",
+    message: "API not exist",
   });
 });
 
